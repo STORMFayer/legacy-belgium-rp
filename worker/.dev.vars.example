@@ -1,0 +1,8 @@
+# Copie ce fichier en « .dev.vars » (gitignoré) pour `wrangler dev`.
+# En production, utilise plutôt `wrangler secret put <NOM>`.
+
+DISCORD_BOT_TOKEN=colle-le-jeton-du-bot-ici
+
+# Optionnel — intégration FiveM (ressource lb_staffbridge)
+FIVEM_URL=
+FIVEM_SECRET=

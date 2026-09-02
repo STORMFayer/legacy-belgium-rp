@@ -57,6 +57,20 @@ la liste des serveurs et l'appartenance/les rôles sur le serveur Legacy Belgium
 Un membre voit le tableau de bord s'il est **sur le serveur** ET possède **au moins un**
 des rôles listés. Sinon : écran « Accès refusé ».
 
+### Panel de modération (backend)
+
+Actions réelles (timeout, kick, ban/unban, warns + historique, fiche membre, journal,
+annonces) + actions FiveM (kick serveur / jail / warn). GitHub Pages ne pouvant pas
+exécuter de code serveur, elles passent par un **Cloudflare Worker** (gratuit) + un
+**bot Discord**, et une petite **ressource FiveM** pour l'in-game.
+
+- Code du Worker : `worker/` — déploiement : `worker/README.md`
+- Ressource FiveM (ESX) : `fivem/lb_staffbridge/` — installation : son `README.md`
+- Une fois le Worker déployé, coller son URL dans `assets/js/staff-config.js` → `apiBase`.
+  Tant que `apiBase` est vide, la section Modération n'apparaît pas (aucune régression).
+- Permissions par palier : Modération (timeout/warn) · Administration (+ kick/ban/FiveM) ·
+  Direction (+ annonces). Défini dans `worker/src/config.js`.
+
 ## Mettre en ligne sur GitHub Pages
 
 ```bash

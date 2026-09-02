@@ -94,6 +94,51 @@
 
       <div id="profile-card" class="profile-card"></div>
 
+      <!-- ===== Modération (visible si le Worker est configuré + palier ≥ 1) ===== -->
+      <section class="panel-block" id="mod-block" hidden>
+        <div class="mod-head">
+          <h2 class="panel-title" style="margin:0;border:0;padding:0">Modération</h2>
+          <span id="mod-tier" class="tier-badge"></span>
+        </div>
+
+        <form id="mod-search" class="mod-search">
+          <input id="mod-q" type="text" placeholder="ID Discord ou pseudo…" autocomplete="off" aria-label="Rechercher un membre">
+          <button class="btn btn-outline" type="submit">Chercher</button>
+        </form>
+        <div id="mod-results" class="mod-results"></div>
+
+        <div id="mod-target" class="mod-target" hidden></div>
+
+        <div class="mod-extras">
+          <details class="mod-extra" data-tier="2">
+            <summary>Débannir par ID</summary>
+            <form id="mod-unban" class="mod-form">
+              <input id="unban-id" type="text" placeholder="ID Discord" required>
+              <input id="unban-reason" type="text" placeholder="Motif" required>
+              <button class="btn btn-outline" type="submit">Débannir</button>
+            </form>
+          </details>
+          <details class="mod-extra" data-tier="3">
+            <summary>Publier une annonce</summary>
+            <form id="mod-announce" class="mod-form">
+              <textarea id="ann-msg" rows="3" placeholder="Message pour le salon d'annonces…" required></textarea>
+              <button class="btn btn-primary" type="submit">Publier</button>
+            </form>
+          </details>
+        </div>
+      </section>
+
+      <section class="panel-block" id="log-block" hidden>
+        <h2 class="panel-title">Journal des actions</h2>
+        <div class="table-wrap">
+          <table class="fines" id="log-table">
+            <thead><tr><th>Quand</th><th>Action</th><th>Cible</th><th>Par</th><th>Motif</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <button id="log-more" class="btn btn-outline" style="margin-top:14px">Charger plus</button>
+      </section>
+
       <div class="staff-grid">
         <section class="panel-block">
           <h2 class="panel-title">Annuaire du staff</h2>
@@ -161,6 +206,8 @@
     © <span id="year">2026</span> Legacy Belgium RP · Espace réservé à l'équipe.
   </p>
 </footer>
+
+<div id="toast-host" class="toast-host" aria-live="polite"></div>
 
 <script src="assets/js/staff-config.js"></script>
 <script src="assets/js/main.js"></script>

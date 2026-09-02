@@ -1,0 +1,14 @@
+{
+  "name": "lb-staff-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Backend de modération de l'espace staff Legacy Belgium RP (Cloudflare Worker)",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail"
+  },
+  "devDependencies": {
+    "wrangler": "^3.90.0"
+  }
+}

@@ -1,0 +1,21 @@
+name = "lb-staff-api"
+main = "src/index.js"
+compatibility_date = "2024-11-01"
+
+# ---------------------------------------------------------------------------
+# KV : stockage des avertissements + journal des actions.
+# Crée le namespace puis colle son id ci-dessous :
+#   wrangler kv namespace create LB_STAFF
+# ---------------------------------------------------------------------------
+[[kv_namespaces]]
+binding = "LB_STAFF"
+id = "REMPLIR_APRES_wrangler_kv_namespace_create"
+
+# ---------------------------------------------------------------------------
+# Secrets (NE PAS mettre ici — utiliser `wrangler secret put <NOM>`) :
+#   DISCORD_BOT_TOKEN   (obligatoire)
+#   FIVEM_URL           (optionnel — URL publique de la ressource lb_staffbridge)
+#   FIVEM_SECRET        (optionnel — doit valoir la convar lb_staff_secret)
+# ---------------------------------------------------------------------------
+
+# La config non secrète (guild, paliers, salon d'annonce…) est dans src/config.js

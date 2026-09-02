@@ -290,11 +290,281 @@
       renderSanctions();
       renderResources();
       showState("panel");
+      initMod(token);
     }).catch(function (err) {
       if (err && err.code === 401) { showState("login"); return; }
       showState("error");
       var m = $("#error-msg");
       if (m) m.textContent = "Impossible de contacter Discord (" + ((err && err.code) || "réseau") + "). Réessaie.";
+    });
+  }
+
+  /* =====================================================================
+     MODÉRATION  (nécessite CFG.apiBase — le Cloudflare Worker)
+     ===================================================================== */
+
+  var MOD = { tier: 0, fivem: false, token: null, logOffset: 0 };
+  var TIER_LABEL = { 1: "Modération", 2: "Administration", 3: "Direction" };
+
+  function toast(msg, kind) {
+    var host = $("#toast-host");
+    if (!host) { return; }
+    var t = document.createElement("div");
+    t.className = "toast " + (kind || "ok");
+    t.textContent = msg;
+    host.appendChild(t);
+    setTimeout(function () { t.classList.add("out"); }, 4200);
+    setTimeout(function () { t.remove(); }, 4800);
+  }
+
+  function apiPost(action, body) {
+    var tk = MOD.token;
+    return fetch(CFG.apiBase.replace(/\/+$/, "") + "/api/" + action, {
+      method: "POST",
+      headers: {
+        "Authorization": tk.token_type + " " + tk.access_token,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(body || {})
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (data) {
+        if (r.ok) return data;
+        var err = new Error(data.error || ("Erreur " + r.status));
+        err.status = r.status;
+        throw err;
+      });
+    });
+  }
+
+  function confirmAction(msg) { return window.confirm(msg); }
+
+  function fmtDate(iso) {
+    if (!iso) return "—";
+    var d = new Date(iso);
+    return d.toLocaleDateString("fr-FR") + " " + d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  }
+
+  function memberAvatar(m) {
+    return avatarUrl({ id: m.id, avatar: m.avatar, discriminator: "0" }, 64);
+  }
+
+  function roleChips(roleIds) {
+    return (roleIds || []).map(function (id) {
+      return CFG.roles[id] ? '<span class="role-chip">' + esc(CFG.roles[id]) + "</span>" : "";
+    }).join("");
+  }
+
+  /* --- Fiche membre + formulaires d'action --- */
+  function renderTarget(m) {
+    var box = $("#mod-target");
+    box.hidden = false;
+
+    var warnsHtml = (m.warns || []).length
+      ? '<ul class="warn-list">' + m.warns.map(function (w) {
+          return "<li><div><span class=\"warn-reason\">" + esc(w.reason) + "</span>" +
+            '<span class="warn-meta">par ' + esc(w.byName) + " · " + fmtDate(w.at) + "</span></div>" +
+            (MOD.tier >= 2 ? '<button class="warn-del" data-warn="' + esc(w.id) + '" title="Supprimer">×</button>' : "") +
+            "</li>";
+        }).join("") + "</ul>"
+      : '<p class="muted">Aucun avertissement.</p>';
+
+    var to = m.timedOutUntil && new Date(m.timedOutUntil) > new Date();
+
+    box.innerHTML =
+      '<div class="tgt-card">' +
+        '<img src="' + memberAvatar(m) + '" alt="">' +
+        '<div>' +
+          '<div class="tgt-name">' + esc(m.name) + ' <span class="muted">@' + esc(m.username) + "</span></div>" +
+          '<div class="muted" style="font-family:var(--font-mono);font-size:.75rem">' + esc(m.id) + "</div>" +
+          '<div class="tgt-chips">' + roleChips(m.roles) + "</div>" +
+          '<div class="muted" style="margin-top:6px">' +
+            (m.inGuild ? "Sur le serveur depuis le " + esc(fmtDate(m.joinedAt)) : "<strong>Absent du serveur</strong>") +
+            (to ? ' · <span style="color:var(--red-soft)">timeout jusqu\'au ' + esc(fmtDate(m.timedOutUntil)) + "</span>" : "") +
+          "</div>" +
+        "</div>" +
+      "</div>" +
+
+      '<div class="act-grid">' +
+        '<form class="act" data-act="timeout"><h4>Timeout</h4>' +
+          '<input type="number" name="minutes" min="1" max="40320" placeholder="minutes" required>' +
+          '<input type="text" name="reason" placeholder="motif" required>' +
+          '<button class="btn btn-outline" type="submit">Appliquer</button>' +
+          (to ? '<button class="btn btn-outline" type="button" data-untimeout>Lever le timeout</button>' : "") +
+        "</form>" +
+
+        '<form class="act" data-act="warn"><h4>Avertissement</h4>' +
+          '<input type="text" name="reason" placeholder="motif (MP envoyé au membre)" required>' +
+          '<button class="btn btn-outline" type="submit">Avertir</button>' +
+        "</form>" +
+
+        (MOD.tier >= 2 ?
+        '<form class="act" data-act="kick" data-tier="2"><h4>Kick Discord</h4>' +
+          '<input type="text" name="reason" placeholder="motif" required>' +
+          '<button class="btn btn-outline danger" type="submit">Expulser</button>' +
+        "</form>" +
+        '<form class="act" data-act="ban" data-tier="2"><h4>Ban Discord</h4>' +
+          '<input type="text" name="reason" placeholder="motif" required>' +
+          '<select name="deleteDays"><option value="0">ne pas purger</option><option value="1">purger 1 j</option><option value="7">purger 7 j</option></select>' +
+          '<button class="btn btn-outline danger" type="submit">Bannir</button>' +
+        "</form>" : "") +
+
+        (MOD.tier >= 2 && MOD.fivem ?
+        '<form class="act" data-act="fivem/kick"><h4>Kick serveur (FiveM)</h4>' +
+          '<input type="text" name="reason" placeholder="motif" required>' +
+          '<button class="btn btn-outline danger" type="submit">Kick IG</button>' +
+        "</form>" +
+        '<form class="act" data-act="fivem/jail"><h4>Prison (FiveM)</h4>' +
+          '<input type="number" name="minutes" min="1" max="1440" placeholder="minutes" required>' +
+          '<input type="text" name="reason" placeholder="motif" required>' +
+          '<button class="btn btn-outline danger" type="submit">Jail</button>' +
+        "</form>" +
+        '<form class="act" data-act="fivem/warn"><h4>Warn en jeu (FiveM)</h4>' +
+          '<input type="text" name="reason" placeholder="motif" required>' +
+          '<button class="btn btn-outline" type="submit">Warn IG</button>' +
+        "</form>" : "") +
+      "</div>" +
+
+      '<div class="warn-block"><h4>Avertissements enregistrés</h4>' + warnsHtml + "</div>";
+
+    // formulaires d'action
+    box.querySelectorAll("form.act").forEach(function (f) {
+      f.addEventListener("submit", function (ev) {
+        ev.preventDefault();
+        var act = f.getAttribute("data-act");
+        var fd = new FormData(f);
+        var payload = { userId: m.id };
+        if (fd.get("minutes")) payload.minutes = parseInt(fd.get("minutes"), 10);
+        if (fd.get("reason")) payload.reason = fd.get("reason");
+        if (fd.get("deleteDays")) payload.deleteDays = parseInt(fd.get("deleteDays"), 10);
+
+        var destructive = /kick|ban|jail/.test(act);
+        if (destructive && !confirmAction("Confirmer : « " + act + " » sur " + m.name + " ?")) return;
+
+        var btn = f.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        apiPost(act, payload).then(function () {
+          toast(act + " → OK sur " + m.name, "ok");
+          refreshTarget(m.id);
+          prependLog();
+        }).catch(function (e) {
+          toast(e.message, "err");
+        }).then(function () { btn.disabled = false; });
+      });
+    });
+
+    var un = box.querySelector("[data-untimeout]");
+    if (un) un.addEventListener("click", function () {
+      apiPost("untimeout", { userId: m.id }).then(function () {
+        toast("Timeout levé.", "ok"); refreshTarget(m.id); prependLog();
+      }).catch(function (e) { toast(e.message, "err"); });
+    });
+
+    box.querySelectorAll(".warn-del").forEach(function (b) {
+      b.addEventListener("click", function () {
+        if (!confirmAction("Supprimer cet avertissement ?")) return;
+        apiPost("warn/delete", { userId: m.id, warnId: b.getAttribute("data-warn") }).then(function () {
+          toast("Avertissement supprimé.", "ok"); refreshTarget(m.id);
+        }).catch(function (e) { toast(e.message, "err"); });
+      });
+    });
+  }
+
+  function refreshTarget(id) {
+    apiPost("member", { query: id }).then(function (data) {
+      if (data.results && data.results[0]) renderTarget(data.results[0]);
+    }).catch(function () {});
+  }
+
+  function renderResults(list) {
+    var wrap = $("#mod-results");
+    if (!list.length) { wrap.innerHTML = '<p class="muted">Aucun résultat.</p>'; return; }
+    wrap.innerHTML = list.map(function (m, i) {
+      return '<button class="mod-hit" data-i="' + i + '">' +
+        '<img src="' + memberAvatar(m) + '" alt="">' +
+        "<span>" + esc(m.name) + ' <span class="muted">@' + esc(m.username) + "</span></span>" +
+        (m.inGuild ? "" : '<span class="muted">(hors serveur)</span>') + "</button>";
+    }).join("");
+    wrap.querySelectorAll(".mod-hit").forEach(function (b) {
+      b.addEventListener("click", function () {
+        renderTarget(list[parseInt(b.getAttribute("data-i"), 10)]);
+        $("#mod-target").scrollIntoView({ behavior: "smooth", block: "nearest" });
+      });
+    });
+  }
+
+  /* --- Journal --- */
+  function loadLog(reset) {
+    if (reset) { MOD.logOffset = 0; $("#log-table tbody").innerHTML = ""; }
+    return apiPost("log", { limit: 25, offset: MOD.logOffset }).then(function (data) {
+      var rows = (data.entries || []).map(function (e) {
+        return "<tr><td class=\"article\">" + esc(fmtDate(e.at)) + "</td>" +
+          "<td>" + esc(e.action) + "</td>" +
+          "<td>" + esc(e.targetName || e.targetId || "—") + "</td>" +
+          "<td>" + esc(e.byName || "—") + "</td>" +
+          "<td class=\"sanction\">" + esc(e.reason || "—") + (e.result ? " · " + esc(e.result) : "") + "</td></tr>";
+      }).join("");
+      $("#log-table tbody").insertAdjacentHTML("beforeend", rows || "<tr><td colspan=\"5\" class=\"muted\">Journal vide.</td></tr>");
+      MOD.logOffset += (data.entries || []).length;
+      var more = $("#log-more");
+      if (more) more.hidden = MOD.logOffset >= (data.total || 0);
+    });
+  }
+  function prependLog() { setTimeout(function () { loadLog(true); }, 400); }
+
+  /* --- Init --- */
+  function initMod(token) {
+    if (!CFG.apiBase) return;
+    MOD.token = token;
+
+    apiPost("whoami", {}).then(function (info) {
+      MOD.tier = info.tier || 0;
+      MOD.fivem = !!info.fivem;
+      if (MOD.tier < 1) return;
+
+      $("#mod-block").hidden = false;
+      $("#log-block").hidden = false;
+      var badge = $("#mod-tier");
+      if (badge) badge.textContent = "Palier " + MOD.tier + " · " + (TIER_LABEL[MOD.tier] || "");
+
+      // masque les blocs au-dessus du palier
+      $$("#mod-block [data-tier]").forEach(function (n) {
+        if (parseInt(n.getAttribute("data-tier"), 10) > MOD.tier) n.remove();
+      });
+
+      $("#mod-search").addEventListener("submit", function (ev) {
+        ev.preventDefault();
+        var q = $("#mod-q").value.trim();
+        if (!q) return;
+        $("#mod-results").innerHTML = '<p class="muted">Recherche…</p>';
+        apiPost("member", { query: q }).then(function (data) {
+          renderResults(data.results || []);
+        }).catch(function (e) { $("#mod-results").innerHTML = '<p class="muted">' + esc(e.message) + "</p>"; });
+      });
+
+      var unbanF = $("#mod-unban");
+      if (unbanF) unbanF.addEventListener("submit", function (ev) {
+        ev.preventDefault();
+        apiPost("unban", { userId: $("#unban-id").value.trim(), reason: $("#unban-reason").value.trim() })
+          .then(function () { toast("Membre débanni.", "ok"); unbanF.reset(); prependLog(); })
+          .catch(function (e) { toast(e.message, "err"); });
+      });
+
+      var annF = $("#mod-announce");
+      if (annF) annF.addEventListener("submit", function (ev) {
+        ev.preventDefault();
+        if (!confirmAction("Publier cette annonce ?")) return;
+        apiPost("announce", { message: $("#ann-msg").value.trim() })
+          .then(function () { toast("Annonce publiée.", "ok"); annF.reset(); prependLog(); })
+          .catch(function (e) { toast(e.message, "err"); });
+      });
+
+      var moreBtn = $("#log-more");
+      if (moreBtn) moreBtn.addEventListener("click", function () { loadLog(false); });
+      loadLog(true);
+
+    }).catch(function (e) {
+      // apiBase renseigné mais Worker injoignable / non staff côté API : on n'affiche rien
+      if (e.status && e.status !== 403) toast("API modération indisponible (" + e.status + ").", "err");
     });
   }
 
