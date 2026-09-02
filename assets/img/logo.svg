@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Legacy Belgium Roleplay">
+  <defs>
+    <path id="lb-top" d="M28,120 A92,92 0 0 1 212,120" fill="none"/>
+    <path id="lb-bot" d="M42,120 A78,78 0 0 0 198,120" fill="none"/>
+  </defs>
+
+  <g fill="none" stroke="#c9a24b">
+    <circle cx="120" cy="120" r="112" stroke-width="1.5"/>
+    <circle cx="120" cy="120" r="104" stroke-width="3"/>
+    <circle cx="120" cy="120" r="66" stroke-width="1"/>
+  </g>
+
+  <g fill="#c9a24b" font-family="'Spectral', Georgia, serif" font-size="14.5" font-weight="500" letter-spacing="3.5">
+    <text><textPath href="#lb-top" startOffset="50%" text-anchor="middle">LEGACY BELGIUM</textPath></text>
+    <text><textPath href="#lb-bot" startOffset="50%" text-anchor="middle">ROLEPLAY</textPath></text>
+  </g>
+  <g fill="#c9a24b">
+    <circle cx="120" cy="46" r="2"/>
+    <circle cx="120" cy="194" r="2"/>
+  </g>
+
+  <!-- Couronne héraldique, trait unique -->
+  <g fill="none" stroke="#c9a24b" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M88,136 L84,104 L100,118 L120,94 L140,118 L156,104 L152,136 Z"/>
+    <line x1="86" y1="146" x2="154" y2="146"/>
+  </g>
+  <g fill="#c9a24b">
+    <circle cx="84" cy="101" r="3.2"/>
+    <circle cx="156" cy="101" r="3.2"/>
+    <circle cx="120" cy="88" r="3.6"/>
+  </g>
+
+  <text x="120" y="172" text-anchor="middle" fill="#ecebe4"
+        font-family="'IBM Plex Mono', monospace" font-size="10" letter-spacing="5">RP</text>
+</svg>
