@@ -67,4 +67,17 @@ réservé au sémantique (crimes, obligations), tricolore réduit à un filet de
 - Typographies (Google Fonts) : **Spectral** (serif, titres), **Public Sans** (texte),
   **IBM Plex Mono** (données, libellés, articles)
 - Tout est centralisé dans `assets/css/style.css` (variables CSS en haut du fichier)
-- `assets/js/main.js` : menu mobile, onglets, filtre du tableau, scrollspy, révélation au défilement
+- `assets/js/main.js` : menu mobile, onglets, filtre du tableau, scrollspy, révélations
+  au défilement, compteurs animés, barre de progression, parallaxe
+
+### Animations
+
+Le site est fortement animé : séquence d'entrée du hero, révélations en cascade au
+défilement, compteurs (chiffres du serveur, montants VIP), reflet sur le titre, halo
+et anneau de l'emblème, parallaxe souris + défilement, survols (cartes, boutons, nav,
+sommaire), transitions d'onglets, barre de progression de lecture.
+
+Les mouvements **continus** (flottement, rotation, reflets) et la **parallaxe** sont
+désactivés si le visiteur a activé « réduire les animations » dans son système
+(Windows : Paramètres → Accessibilité → Effets visuels → Effets d'animation).
+Les apparitions ponctuelles restent actives, en version rapide.
