@@ -33,8 +33,8 @@ window.STAFF_CONFIG = {
     "1531350214642761806": "Développeur",
     "1531350214642761801": "Administrateur",
     "1531350214642761800": "Modérateur",
-    "1531350214642761798": "Douanier",
-    "1531350214630445115": "Communauté Manager"
+    "1531350214642761798": "Communauté Manager",
+    "1531350214630445115": "Staff de Legacy Belgium"
   },
 
   /* Widget du serveur activé ?  (Paramètres du serveur → Widget → Activer)
