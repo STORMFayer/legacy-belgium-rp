@@ -23,18 +23,18 @@ window.STAFF_CONFIG = {
      RÔLES considérés comme « staff ».  Clé = ID du rôle, valeur = nom affiché.
      L'ordre = hiérarchie (haut = plus élevé).
 
-     >>> À VÉRIFIER : les noms ci-dessous sont une SUPPOSITION, dans l'ordre où
-         tu m'as donné les IDs. Renomme / réordonne librement — seuls les IDs
-         comptent pour l'accès, les noms ne servent qu'à l'affichage.
+     Noms déduits de ta liste de rôles Discord, dans l'ordre où tu as donné
+     les IDs. Si l'ordre ne correspond pas, il suffit de réassocier les noms.
+     Seuls les IDs conditionnent l'accès ; les noms ne servent qu'à l'affichage.
      ------------------------------------------------------------------------- */
   roles: {
     "1531350214655479921": "Fondateur",
-    "1531350214655479920": "Responsable",
-    "1531350214642761806": "Administrateur",
-    "1531350214642761801": "Développeur",
-    "1531350214642761800": "Modérateur confirmé",
-    "1531350214642761798": "Modérateur",
-    "1531350214630445115": "Modérateur test"
+    "1531350214655479920": "Co-Fondateur",
+    "1531350214642761806": "Développeur",
+    "1531350214642761801": "Administrateur",
+    "1531350214642761800": "Modérateur",
+    "1531350214642761798": "Douanier",
+    "1531350214630445115": "Communauté Manager"
   },
 
   /* Widget du serveur activé ?  (Paramètres du serveur → Widget → Activer)
