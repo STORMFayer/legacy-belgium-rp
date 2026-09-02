@@ -204,6 +204,31 @@
     }).join("");
   }
 
+  function renderDuties(mineNames) {
+    var items = CFG.duties || [];
+    var block = $("#duties-block");
+    if (!items.length) { if (block) block.hidden = true; return; }
+    if (block) block.hidden = false;
+    var mine = mineNames || [];
+    $("#duties").innerHTML = items.map(function (d) {
+      var isMine = mine.indexOf(d.role) !== -1;
+      return '<div class="duty' + (isMine ? " mine" : "") + '">' +
+        '<span class="duty-role">' + esc(d.role) + (isMine ? ' <span class="duty-tag">toi</span>' : "") + "</span>" +
+        '<span class="duty-text">' + esc(d.text) + "</span></div>";
+    }).join("");
+  }
+
+  function renderSanctions() {
+    var items = CFG.sanctions || [];
+    var block = $("#sanctions-block");
+    if (!items.length) { if (block) block.hidden = true; return; }
+    if (block) block.hidden = false;
+    $("#sanctions-table tbody").innerHTML = items.map(function (s) {
+      return "<tr><td class=\"infraction-name\">" + esc(s.faute) + "</td>" +
+        '<td class="price">' + esc(s.peine) + "</td></tr>";
+    }).join("");
+  }
+
   function fetchWidget() {
     if (!CFG.widgetEnabled || !CFG.guildId || /REMPLIR/.test(CFG.guildId)) return Promise.resolve(null);
     return fetch("https://discord.com/api/guilds/" + CFG.guildId + "/widget.json")
@@ -258,8 +283,11 @@
         return;
       }
 
+      var mineNames = staffRoleIds.map(function (id) { return CFG.roles[id]; });
       renderRoster(widget);
       renderWidget(widget);
+      renderDuties(mineNames);
+      renderSanctions();
       renderResources();
       showState("panel");
     }).catch(function (err) {
