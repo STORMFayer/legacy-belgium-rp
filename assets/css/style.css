@@ -472,6 +472,58 @@ h3.display { font-size: var(--step-2); }
 }
 .note strong { color: var(--gold-soft); }
 
+/* ===== Touches & commandes ===== */
+kbd {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  line-height: 1.4;
+  min-width: 2.1em;
+  text-align: center;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  padding: 2px 7px;
+  color: var(--gold-soft);
+  white-space: nowrap;
+}
+.keys {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0 32px;
+  margin: 14px 0 8px;
+}
+.key-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+.key-row kbd { flex: none; }
+.key-row span { color: var(--ink-dim); font-size: 0.94rem; }
+
+.cmds { margin: 14px 0 8px; }
+.cmd {
+  display: grid;
+  grid-template-columns: minmax(140px, max-content) 1fr;
+  gap: 6px 20px;
+  align-items: baseline;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+.cmd code {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--gold-soft);
+  white-space: nowrap;
+}
+.cmd span { color: var(--ink-dim); font-size: 0.94rem; }
+@media (max-width: 560px) {
+  .cmd { grid-template-columns: 1fr; gap: 2px; }
+}
+
 /* ===== Onglets ===== */
 .tabs {
   display: flex;
@@ -730,10 +782,163 @@ tr.cat-row td {
 .to-top:hover { border-color: var(--gold-deep); }
 .to-top.show { opacity: 1; pointer-events: auto; }
 
-/* ===== Révélation au défilement ===== */
-.reveal { opacity: 0; transform: translateY(14px); transition: opacity .5s ease, transform .5s ease; }
+/* ===== Barre de progression de lecture ===== */
+.progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  width: 0;
+  background: linear-gradient(90deg, var(--gold-deep), var(--gold-soft));
+  z-index: 60;
+  transition: width .1s linear;
+}
+
+/* =========================================================================
+   ANIMATIONS  (désactivées globalement via le bloc prefers-reduced-motion)
+   ========================================================================= */
+
+/* Entrée de page */
+body { animation: page-in .5s ease both; }
+@keyframes page-in { from { opacity: 0 } to { opacity: 1 } }
+
+/* En-tête */
+.site-header { animation: drop-in .55s cubic-bezier(.2,.75,.25,1) both; }
+@keyframes drop-in { from { transform: translateY(-110%) } to { transform: none } }
+
+/* Reflet sur le filet tricolore */
+.flag-rule { position: relative; overflow: hidden; }
+.flag-rule::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent);
+  transform: translateX(-100%);
+  animation: shimmer 7s ease-in-out 2.5s infinite;
+}
+@keyframes shimmer { 0% { transform: translateX(-100%) } 45%,100% { transform: translateX(320%) } }
+
+/* Hero — séquence d'apparition */
+.hero [data-seq] { opacity: 0; animation: seq-up .75s cubic-bezier(.2,.75,.25,1) both; }
+.hero [data-seq="1"] { animation-delay: .12s }
+.hero [data-seq="2"] { animation-delay: .22s }
+.hero [data-seq="3"] { animation-delay: .32s }
+.hero [data-seq="4"] { animation-delay: .42s }
+.hero [data-seq="5"] { animation-delay: .52s }
+.hero [data-seq="6"] { animation-delay: .62s }
+@keyframes seq-up { from { opacity: 0; transform: translateY(22px) } to { opacity: 1; transform: none } }
+
+/* Emblème du hero */
+.hero-emblem {
+  position: relative;
+  animation: float 7s ease-in-out 1.6s infinite;
+}
+.hero-emblem img {
+  animation: emblem-in 1.1s cubic-bezier(.2,.75,.25,1) .35s both;
+  transition: transform .3s ease;
+}
+@keyframes emblem-in {
+  from { opacity: 0; transform: scale(.82) rotate(-10deg) }
+  to   { opacity: 1; transform: none }
+}
+@keyframes float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-12px) } }
+.hero-emblem::after {
+  content: "";
+  position: absolute;
+  width: 78%; aspect-ratio: 1;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent, rgba(201,162,75,.30), transparent 42%);
+  filter: blur(42px);
+  z-index: -1;
+  animation: spin 16s linear infinite;
+}
+@keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg) } }
+
+/* Dérive lente du fond du hero */
+.hero { background-size: 160% 160%, 160% 160%; animation: drift 24s ease-in-out infinite alternate; }
+@keyframes drift {
+  from { background-position: 0% 0%, 100% 0% }
+  to   { background-position: 20% 12%, 80% 8% }
+}
+
+/* Révélation au défilement (posée par le JS) */
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity .6s ease, transform .6s cubic-bezier(.2,.75,.25,1);
+  transition-delay: calc(var(--i, 0) * 80ms);
+}
 .reveal.in { opacity: 1; transform: none; }
-@media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; } }
+
+/* Le filet or se dessine quand il entre à l'écran */
+.rule::before { transition: width .7s cubic-bezier(.2,.75,.25,1); }
+.reveal .rule::before, .rule.reveal::before { width: 0; }
+.reveal.in .rule::before, .rule.reveal.in::before { width: 34px; }
+.rule.long.reveal.in::before { width: 100%; }
+
+/* Cartes — survol */
+.cell { transition: background .22s ease, transform .28s cubic-bezier(.2,.75,.25,1); }
+.cell:hover { background: var(--surface); transform: translateY(-4px); }
+.cell:hover h3 { color: var(--gold-soft); }
+.cell h3 { transition: color .2s ease; }
+
+/* Plans — survol */
+.plan { transition: background .22s ease, transform .28s cubic-bezier(.2,.75,.25,1); }
+.plan:hover { transform: translateY(-4px); background: var(--surface); }
+
+/* Boutons — relief + balayage */
+.btn { position: relative; overflow: hidden; }
+.btn:hover { transform: translateY(-2px); }
+.btn::after {
+  content: "";
+  position: absolute; top: 0; left: -60%;
+  width: 40%; height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,.35), transparent);
+  transform: skewX(-18deg);
+  transition: left .5s ease;
+}
+.btn:hover::after { left: 130%; }
+
+/* Liens de nav — soulignement animé */
+.nav-links a:not(.ext)::after {
+  content: "";
+  position: absolute; left: 13px; right: 13px; bottom: 2px;
+  height: 1px; background: var(--gold);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .25s ease;
+}
+.nav-links a:not(.ext):hover::after { transform: scaleX(1); }
+.nav-links a.active::after { transform: scaleX(1); }
+
+/* Sceau des pages document — léger balancement */
+.doc-head .seal { animation: seal-sway 20s ease-in-out infinite; }
+@keyframes seal-sway {
+  0%,100% { transform: translateY(-50%) rotate(-4deg) }
+  50%     { transform: translateY(-50%) rotate(4deg) }
+}
+
+/* Lignes de tableau / commandes / touches — arrivée en cascade (JS) */
+.row-anim { opacity: 0; transform: translateX(-10px); transition: opacity .4s ease, transform .4s ease; transition-delay: calc(var(--i, 0) * 22ms); }
+.row-anim.in { opacity: 1; transform: none; }
+
+/* Retour haut */
+.to-top { transition: opacity .2s ease, border-color .16s ease, transform .3s ease; }
+.to-top:hover { transform: translateY(-3px); border-color: var(--gold); }
+
+/* Onglet : contenu qui se fond */
+.tab-panel.active { animation: fade-slide .4s ease both; }
+@keyframes fade-slide { from { opacity: 0; transform: translateY(10px) } to { opacity: 1; transform: none } }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+  .reveal, .hero [data-seq], .row-anim { opacity: 1 !important; transform: none !important; }
+  .flag-rule::after, .hero-emblem::after { display: none; }
+}
 
 /* ===== Responsive ===== */
 @media (max-width: 900px) {

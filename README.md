@@ -7,20 +7,18 @@ Site statique (HTML/CSS/JS, aucune dépendance, aucun build) pour le serveur Fiv
 
 | Fichier | Contenu |
 |---|---|
-| `index.html` | Présentation du serveur, univers, comment rejoindre, connexion, teaser VIP |
+| `index.html` | Présentation du serveur, univers, comment rejoindre, connexion FiveM, teaser VIP |
 | `reglement.html` | Règlement complet (lexique, règles générales, zones safe, Discord, légal, illégal, mort RP, streamers, entreprise, code de la route, double perso) |
 | `code-penal.html` | Onglet **Articles de loi** (81 articles + annexes) + onglet **Grille des amendes** (tableau filtrable : infractions, délits, crimes, code aérien, code maritime) |
+| `touches.html` | **Touches & commandes IG** : touches F, déplacements AZERTY, commandes (véhicules, perso, services, radio, plage, communication) |
 | `abonnements.html` | Les 6 packs VIP (Bronze, Argent, Gold, Diamant, Ultime, à vie) |
 
 ## À compléter avant la mise en ligne
 
-1. **Logo** — déposer le vrai fichier ici : `assets/img/logo.png`
-   (un emblème `assets/img/logo.svg` dessiné à la main s'affiche automatiquement tant
-   qu'il manque, via `onerror` sur les `<img>`). Format conseillé : PNG carré, fond
-   transparent, ~512 px. Aucune autre modification nécessaire — le remplacement du
-   fichier suffit.
-2. **Code de connexion FiveM** — dans `index.html`, remplacer
-   `connect <code-cfx-à-remplir>` par le vrai code `cfx.re` (et retirer le badge « À compléter »).
+1. Logo — ✅ en place (`assets/img/logo.png`, 640 px). L'original 1024 px reste en local
+   sous `logo-original.png` (ignoré par git). Un emblème SVG (`logo.svg`) sert de secours
+   automatique via `onerror`.
+2. Connexion FiveM — ✅ `cfx.re/join/988a64e` (console F8 + bouton « Se connecter »).
 3. **Boutique Tebex** — dans `abonnements.html`, remplacer toutes les occurrences de
    `https://legacybelgium.tebex.io/` par l'URL réelle de la boutique
    (idéalement le lien direct de chaque package). Retirer ensuite le bloc « À configurer ».
