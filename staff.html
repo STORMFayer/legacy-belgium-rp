@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Espace Staff — Legacy Belgium RP</title>
+<meta name="description" content="Espace réservé à l'équipe de Legacy Belgium RP. Connexion via Discord.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="assets/img/logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400;500;600&family=Spectral:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div class="flag-rule"></div>
+
+<header class="site-header">
+  <nav class="nav">
+    <a class="brand" href="index.html">
+      <img src="assets/img/logo.png" onerror="this.onerror=null;this.src='assets/img/logo.svg'" alt="">
+      <span>Legacy Belgium</span>
+      <span class="rp">RP</span>
+    </a>
+    <button class="nav-toggle" aria-label="Ouvrir le menu">☰</button>
+    <div class="nav-links">
+      <a href="index.html">Accueil</a>
+      <a href="reglement.html">Règlement</a>
+      <a href="code-penal.html">Code pénal</a>
+      <a href="touches.html">Touches IG</a>
+      <a href="abonnements.html">Abonnements</a>
+      <a href="https://discord.gg/r7Qvk8H2c" class="ext" target="_blank" rel="noopener">Discord</a>
+    </div>
+  </nav>
+</header>
+
+<main class="staff">
+  <div class="wrap">
+
+    <!-- ===== Connexion ===== -->
+    <section id="state-login" class="staff-state" hidden>
+      <span class="kicker">Accès réservé</span>
+      <h1 class="display">Espace staff</h1>
+      <div class="rule"></div>
+      <p class="lede">
+        Cet espace est réservé à l'équipe de Legacy Belgium (fondateurs, responsables,
+        administrateurs, développeurs, modérateurs). Connecte-toi avec le compte Discord
+        que tu utilises sur le serveur.
+      </p>
+      <button class="discord-btn" data-login>
+        <svg viewBox="0 0 24 18" width="22" height="17" aria-hidden="true"><path fill="currentColor" d="M20.3 1.5A19.8 19.8 0 0 0 15.4 0l-.25.5a18.3 18.3 0 0 1 4.3 1.35A15.7 15.7 0 0 0 12 .9a15.7 15.7 0 0 0-7.45.9A18.3 18.3 0 0 1 8.85.5L8.6 0A19.8 19.8 0 0 0 3.7 1.5C.6 6.1-.25 10.5.17 14.9a19.9 19.9 0 0 0 6 3l.8-1.1a12.9 12.9 0 0 1-2-1l.5-.4c3.9 1.8 8.1 1.8 12 0l.5.4a12.9 12.9 0 0 1-2 1l.8 1.1a19.9 19.9 0 0 0 6-3c.5-5.1-.85-9.45-4-13.4ZM8 12.2c-1.15 0-2.1-1.05-2.1-2.35S6.83 7.5 8 7.5s2.12 1.06 2.1 2.35c0 1.3-.95 2.35-2.1 2.35Zm8 0c-1.15 0-2.1-1.05-2.1-2.35S14.83 7.5 16 7.5s2.12 1.06 2.1 2.35c0 1.3-.94 2.35-2.1 2.35Z"/></svg>
+        Se connecter avec Discord
+      </button>
+      <p class="staff-fine">
+        Connexion en lecture seule : le site voit ton pseudo, ton avatar et tes rôles
+        sur le serveur, rien d'autre. Le jeton reste dans cet onglet et expire.
+      </p>
+      <p id="cfg-warning" class="note" hidden>
+        <strong>Configuration incomplète.</strong> Renseigne
+        <code>assets/js/staff-config.js</code> (Client ID, ID du serveur, rôles) pour
+        activer la connexion. Voir <code>README.md</code>.
+      </p>
+    </section>
+
+    <!-- ===== Chargement ===== -->
+    <section id="state-loading" class="staff-state center" hidden>
+      <div class="spinner" aria-hidden="true"></div>
+      <p class="muted">Vérification de l'accès…</p>
+    </section>
+
+    <!-- ===== Accès refusé ===== -->
+    <section id="state-denied" class="staff-state" hidden>
+      <span class="kicker" style="color:var(--red-soft)">Accès refusé</span>
+      <h1 class="display">Tu n'es pas dans l'équipe</h1>
+      <div class="rule"></div>
+      <p class="lede">
+        Le compte <strong id="denied-user">—</strong> n'a aucun rôle staff sur le serveur
+        Legacy Belgium (ou n'est pas membre du serveur). Si c'est une erreur, contacte un
+        responsable.
+      </p>
+      <button class="btn btn-outline" data-logout>Changer de compte</button>
+    </section>
+
+    <!-- ===== Panneau ===== -->
+    <section id="state-panel" class="staff-state" hidden>
+      <div class="staff-head">
+        <div>
+          <span class="kicker">Espace staff</span>
+          <h1 class="display">Tableau de bord</h1>
+          <div class="rule"></div>
+        </div>
+        <button class="btn btn-outline" data-logout>Se déconnecter</button>
+      </div>
+
+      <div id="profile-card" class="profile-card"></div>
+
+      <div class="staff-grid">
+        <section class="panel-block">
+          <h2 class="panel-title">Annuaire du staff</h2>
+          <p id="roster-note" class="muted"></p>
+          <div id="roster" class="roster"></div>
+        </section>
+
+        <section class="panel-block">
+          <h2 class="panel-title">Serveur en direct</h2>
+          <div id="live"></div>
+        </section>
+      </div>
+
+      <section class="panel-block">
+        <h2 class="panel-title">Raccourcis &amp; ressources</h2>
+        <div id="resources" class="res-grid"></div>
+      </section>
+    </section>
+
+    <!-- ===== Erreur ===== -->
+    <section id="state-error" class="staff-state" hidden>
+      <span class="kicker" style="color:var(--red-soft)">Erreur</span>
+      <h1 class="display">Quelque chose a coincé</h1>
+      <div class="rule"></div>
+      <p class="lede" id="error-msg">Une erreur est survenue.</p>
+      <button class="btn btn-outline" data-retry>Recommencer</button>
+    </section>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <a class="brand" href="index.html">
+      <img src="assets/img/logo.png" onerror="this.onerror=null;this.src='assets/img/logo.svg'" alt="">
+      <span>Legacy Belgium</span>
+      <span class="rp">RP</span>
+    </a>
+    <div class="footer-links">
+      <a href="index.html">Accueil</a>
+      <a href="reglement.html">Règlement</a>
+      <a href="code-penal.html">Code pénal</a>
+      <a href="touches.html">Touches IG</a>
+      <a href="abonnements.html">Abonnements</a>
+      <a href="https://discord.gg/r7Qvk8H2c" target="_blank" rel="noopener">Discord</a>
+      <a href="staff.html">Staff</a>
+    </div>
+  </div>
+  <p class="footer-note">
+    © <span id="year">2026</span> Legacy Belgium RP · Espace réservé à l'équipe.
+  </p>
+</footer>
+
+<script src="assets/js/staff-config.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/staff.js"></script>
+</body>
+</html>

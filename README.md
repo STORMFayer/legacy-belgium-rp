@@ -12,6 +12,7 @@ Site statique (HTML/CSS/JS, aucune dépendance, aucun build) pour le serveur Fiv
 | `code-penal.html` | Onglet **Articles de loi** (81 articles + annexes) + onglet **Grille des amendes** (tableau filtrable : infractions, délits, crimes, code aérien, code maritime) |
 | `touches.html` | **Touches & commandes IG** : touches F, déplacements AZERTY, commandes (véhicules, perso, services, radio, plage, communication) |
 | `abonnements.html` | Les 6 packs VIP (Bronze, Argent, Gold, Diamant, Ultime, à vie) |
+| `staff.html` | **Espace staff** — connexion Discord (OAuth implicite), vérification de rôle, profil, annuaire, serveur en direct, ressources. Config dans `assets/js/staff-config.js`. |
 
 ## À compléter avant la mise en ligne
 
@@ -22,7 +23,39 @@ Site statique (HTML/CSS/JS, aucune dépendance, aucun build) pour le serveur Fiv
 3. **Boutique Tebex** — dans `abonnements.html`, remplacer toutes les occurrences de
    `https://legacybelgium.tebex.io/` par l'URL réelle de la boutique
    (idéalement le lien direct de chaque package). Retirer ensuite le bloc « À configurer ».
-4. Le lien Discord (`https://discord.gg/r7Qvk8H2c`) est déjà en place partout.
+4. **Espace staff** — voir la section « Espace staff » ci-dessous.
+5. Le lien Discord (`https://discord.gg/r7Qvk8H2c`) est déjà en place partout.
+
+## Espace staff (`staff.html`)
+
+Panneau réservé à l'équipe. Authentification **OAuth2 Discord en flux implicite** :
+100 % côté navigateur, aucun serveur, aucun secret. Le site lit uniquement le profil,
+la liste des serveurs et l'appartenance/les rôles sur le serveur Legacy Belgium.
+
+> ⚠️ C'est un **filtre de confort**, pas une sécurité forte : tout se passe côté client.
+> Ne mets rien de réellement confidentiel dans `staff-config.js` (le fichier est public).
+> Pour des outils de modération réels (kick/ban/logs), il faudra un backend + un bot.
+
+### Mise en place (Discord Developer Portal)
+
+1. <https://discord.com/developers/applications> → **New Application**.
+2. Onglet **OAuth2** :
+   - copier le **Client ID** → `clientId` dans `assets/js/staff-config.js`
+   - **Redirects** → ajouter exactement :
+     `https://<utilisateur>.github.io/<repo>/staff.html`
+     (pour test local : `http://localhost:4173/staff.html`)
+   - **NE PAS** toucher/partager le *Client Secret*.
+3. Discord (client) → activer le **Mode développeur** (Paramètres → Avancés).
+4. Clic droit sur l'icône du serveur → **Copier l'identifiant du serveur** → `guildId`.
+5. Paramètres du serveur → **Rôles** → clic droit sur chaque rôle staff → **Copier
+   l'identifiant** → remplir l'objet `roles` (clé = ID, valeur = nom affiché, ordre =
+   hiérarchie).
+6. (Optionnel) Paramètres du serveur → **Widget** → *Activer le widget du serveur*
+   pour les statistiques live et le repli de l'annuaire.
+7. Remplir `roster` (annuaire) et `resources` (liens internes) dans le même fichier.
+
+Un membre voit le tableau de bord s'il est **sur le serveur** ET possède **au moins un**
+des rôles listés. Sinon : écran « Accès refusé ».
 
 ## Mettre en ligne sur GitHub Pages
 
