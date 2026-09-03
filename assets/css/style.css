@@ -209,6 +209,7 @@ h3.display { font-size: var(--step-2); }
 
 /* ===== Boutons ===== */
 .btn {
+  background: transparent;
   display: inline-flex;
   align-items: center;
   gap: 9px;
@@ -224,8 +225,8 @@ h3.display { font-size: var(--step-2); }
 }
 .btn-primary { background: var(--gold); color: #16120a; }
 .btn-primary:hover { background: var(--gold-soft); color: #16120a; text-decoration: none; }
-.btn-outline { border-color: var(--line); color: var(--ink); }
-.btn-outline:hover { border-color: var(--gold-deep); color: var(--gold-soft); text-decoration: none; }
+.btn-outline { background: var(--surface); border-color: var(--line); color: var(--ink); }
+.btn-outline:hover { background: var(--surface-2); border-color: var(--gold-deep); color: var(--gold-soft); text-decoration: none; }
 
 /* ===== Structure ===== */
 .wrap { max-width: var(--wrap); margin: 0 auto; padding-inline: 24px; }
@@ -1312,7 +1313,7 @@ body { animation: page-in .5s ease both; }
   .doc-head .seal { display: none; }
 }
 @media (min-width: 901px) { .toc-toggle { display: none; } }
-@media (max-width: 620px) {
+@media (max-width: 860px) {
   .nav-links {
     display: none;
     position: absolute; top: 100%; left: 0; right: 0;
