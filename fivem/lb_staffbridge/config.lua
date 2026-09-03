@@ -33,3 +33,17 @@ function Config.DoWarn(src, reason, by)
     args = { "AVERTISSEMENT", reason }
   })
 end
+
+-- =============================================================================
+--  txAdmin
+--  txAdmin ne fournit PAS d'API entrante : on ne peut pas lui demander de kick /
+--  warn depuis l'extérieur. Ses seules intégrations sont des ÉVÉNEMENTS qu'il émet
+--  (txAdmin:events:playerKicked, ...playerWarned, ...) qu'un script peut écouter.
+--  -> lb_staffbridge fait le kick/jail/warn directement dans le jeu (effet identique
+--     pour le joueur ; l'action est tracée dans le journal du panel).
+--  Si tu veux que l'action apparaisse AUSSI dans l'historique txAdmin, tu peux, ci-
+--  dessous, déclencher la commande console txAdmin correspondante :
+-- =============================================================================
+-- function Config.MirrorToTxAdmin(kind, src, reason, by)
+--   -- ex. : ExecuteCommand(("txaWarn %d \"%s\""):format(src, reason))
+-- end

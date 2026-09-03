@@ -1199,6 +1199,22 @@ body { animation: page-in .5s ease both; }
 .tgt-name { font-family: var(--font-serif); font-size: 1.2rem; color: var(--ink); }
 .tgt-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 
+.act-section { margin-bottom: 18px; }
+.act-section-head {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 10px; padding-bottom: 8px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.act-section-title {
+  font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--gold-soft);
+}
+.act-status {
+  font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: .08em;
+  text-transform: uppercase; padding: 2px 7px; border-radius: 2px; border: 1px solid var(--line);
+}
+.act-status.ok { color: var(--gold-soft); border-color: var(--gold-deep); }
+.act-status.off { color: var(--ink-faint); }
 .act-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
 .act {
   background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);

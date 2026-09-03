@@ -418,45 +418,59 @@
         "</div>" +
       "</div>" +
 
-      '<div class="act-grid">' +
-        '<form class="act" data-act="timeout"><h4>Timeout</h4>' +
-          '<input type="number" name="minutes" min="1" max="40320" placeholder="minutes" required>' +
-          '<input type="text" name="reason" placeholder="motif" required>' +
-          '<button class="btn btn-outline" type="submit">Appliquer</button>' +
-          (to ? '<button class="btn btn-outline" type="button" data-untimeout>Lever le timeout</button>' : "") +
-        "</form>" +
-
-        '<form class="act" data-act="warn"><h4>Avertissement</h4>' +
-          '<input type="text" name="reason" placeholder="motif (MP envoyé au membre)" required>' +
-          '<button class="btn btn-outline" type="submit">Avertir</button>' +
-        "</form>" +
-
-        (MOD.tier >= 2 ?
-        '<form class="act" data-act="kick" data-tier="2"><h4>Kick Discord</h4>' +
-          '<input type="text" name="reason" placeholder="motif" required>' +
-          '<button class="btn btn-outline danger" type="submit">Expulser</button>' +
-        "</form>" +
-        '<form class="act" data-act="ban" data-tier="2"><h4>Ban Discord</h4>' +
-          '<input type="text" name="reason" placeholder="motif" required>' +
-          '<select name="deleteDays"><option value="0">ne pas purger</option><option value="1">purger 1 j</option><option value="7">purger 7 j</option></select>' +
-          '<button class="btn btn-outline danger" type="submit">Bannir</button>' +
-        "</form>" : "") +
-
-        (MOD.tier >= 2 && MOD.fivem ?
-        '<form class="act" data-act="fivem/kick"><h4>Kick serveur (FiveM)</h4>' +
-          '<input type="text" name="reason" placeholder="motif" required>' +
-          '<button class="btn btn-outline danger" type="submit">Kick IG</button>' +
-        "</form>" +
-        '<form class="act" data-act="fivem/jail"><h4>Prison (FiveM)</h4>' +
-          '<input type="number" name="minutes" min="1" max="1440" placeholder="minutes" required>' +
-          '<input type="text" name="reason" placeholder="motif" required>' +
-          '<button class="btn btn-outline danger" type="submit">Jail</button>' +
-        "</form>" +
-        '<form class="act" data-act="fivem/warn"><h4>Warn en jeu (FiveM)</h4>' +
-          '<input type="text" name="reason" placeholder="motif" required>' +
-          '<button class="btn btn-outline" type="submit">Warn IG</button>' +
-        "</form>" : "") +
+      '<div class="act-section">' +
+        '<div class="act-section-head"><span class="act-section-title">Discord</span></div>' +
+        '<div class="act-grid">' +
+          '<form class="act" data-act="timeout"><h4>Timeout</h4>' +
+            '<input type="number" name="minutes" min="1" max="40320" placeholder="minutes" required>' +
+            '<input type="text" name="reason" placeholder="motif" required>' +
+            '<button class="btn btn-outline" type="submit">Appliquer</button>' +
+            (to ? '<button class="btn btn-outline" type="button" data-untimeout>Lever le timeout</button>' : "") +
+          "</form>" +
+          '<form class="act" data-act="warn"><h4>Avertissement</h4>' +
+            '<input type="text" name="reason" placeholder="motif (MP envoyé au membre)" required>' +
+            '<button class="btn btn-outline" type="submit">Avertir</button>' +
+          "</form>" +
+          (MOD.tier >= 2 ?
+          '<form class="act" data-act="kick"><h4>Kick Discord</h4>' +
+            '<input type="text" name="reason" placeholder="motif" required>' +
+            '<button class="btn btn-outline danger" type="submit">Expulser</button>' +
+          "</form>" +
+          '<form class="act" data-act="ban"><h4>Ban Discord</h4>' +
+            '<input type="text" name="reason" placeholder="motif" required>' +
+            '<select name="deleteDays"><option value="0">ne pas purger</option><option value="1">purger 1 j</option><option value="7">purger 7 j</option></select>' +
+            '<button class="btn btn-outline danger" type="submit">Bannir</button>' +
+          "</form>" : "") +
+        "</div>" +
       "</div>" +
+
+      (MOD.tier >= 2 ?
+      '<div class="act-section">' +
+        '<div class="act-section-head"><span class="act-section-title">En jeu · serveur</span>' +
+          (MOD.fivem
+            ? '<span class="act-status ok">relié</span>'
+            : '<span class="act-status off">non relié</span>') +
+        "</div>" +
+        (MOD.fivem ?
+        '<div class="act-grid">' +
+          '<form class="act" data-act="fivem/kick"><h4>Kick serveur</h4>' +
+            '<input type="text" name="reason" placeholder="motif" required>' +
+            '<button class="btn btn-outline danger" type="submit">Kick IG</button>' +
+          "</form>" +
+          '<form class="act" data-act="fivem/jail"><h4>Prison</h4>' +
+            '<input type="number" name="minutes" min="1" max="1440" placeholder="minutes" required>' +
+            '<input type="text" name="reason" placeholder="motif" required>' +
+            '<button class="btn btn-outline danger" type="submit">Jail</button>' +
+          "</form>" +
+          '<form class="act" data-act="fivem/warn"><h4>Avertissement en jeu</h4>' +
+            '<input type="text" name="reason" placeholder="motif" required>' +
+            '<button class="btn btn-outline" type="submit">Warn IG</button>' +
+          "</form>" +
+        "</div>"
+        : '<p class="muted">Serveur FiveM non relié. Installe la ressource ' +
+          '<code>lb_staffbridge</code> (dossier <code>fivem/</code> du dépôt) puis ajoute ' +
+          'les secrets <code>FIVEM_URL</code> et <code>FIVEM_SECRET</code> au Worker.</p>') +
+      "</div>" : "") +
 
       '<div class="warn-block"><h4>Avertissements enregistrés</h4>' + warnsHtml + "</div>";
 
