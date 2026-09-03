@@ -336,7 +336,41 @@
     });
   }
 
-  function confirmAction(msg) { return window.confirm(msg); }
+  /* Fenêtre de confirmation maison (sombre, cohérente avec le site). */
+  function confirmAction(msg, opts) {
+    opts = opts || {};
+    return new Promise(function (resolve) {
+      var overlay = document.createElement("div");
+      overlay.className = "modal-overlay";
+      overlay.innerHTML =
+        '<div class="modal" role="dialog" aria-modal="true">' +
+          '<h3>' + esc(opts.title || "Confirmation") + "</h3>" +
+          '<p>' + esc(msg) + "</p>" +
+          '<div class="modal-actions">' +
+            '<button class="btn btn-outline" data-no>Annuler</button>' +
+            '<button class="btn ' + (opts.danger ? "btn-outline danger" : "btn-primary") + '" data-yes>' +
+              esc(opts.confirmLabel || "Confirmer") + "</button>" +
+          "</div>" +
+        "</div>";
+      document.body.appendChild(overlay);
+
+      var done = function (val) {
+        document.removeEventListener("keydown", onKey);
+        overlay.classList.add("out");
+        setTimeout(function () { overlay.remove(); }, 180);
+        resolve(val);
+      };
+      var onKey = function (e) {
+        if (e.key === "Escape") done(false);
+        if (e.key === "Enter") done(true);
+      };
+      document.addEventListener("keydown", onKey);
+      overlay.addEventListener("click", function (e) { if (e.target === overlay) done(false); });
+      overlay.querySelector("[data-no]").addEventListener("click", function () { done(false); });
+      overlay.querySelector("[data-yes]").addEventListener("click", function () { done(true); });
+      overlay.querySelector("[data-yes]").focus();
+    });
+  }
 
   function fmtDate(iso) {
     if (!iso) return "—";
@@ -438,17 +472,24 @@
         if (fd.get("deleteDays")) payload.deleteDays = parseInt(fd.get("deleteDays"), 10);
 
         var destructive = /kick|ban|jail/.test(act);
-        if (destructive && !confirmAction("Confirmer : « " + act + " » sur " + m.name + " ?")) return;
-
         var btn = f.querySelector('button[type="submit"]');
-        btn.disabled = true;
-        apiPost(act, payload).then(function () {
-          toast(act + " → OK sur " + m.name, "ok");
-          refreshTarget(m.id);
-          prependLog();
-        }).catch(function (e) {
-          toast(e.message, "err");
-        }).then(function () { btn.disabled = false; });
+        var run = function () {
+          btn.disabled = true;
+          apiPost(act, payload).then(function () {
+            toast(act + " → OK sur " + m.name, "ok");
+            refreshTarget(m.id);
+            prependLog();
+          }).catch(function (e) {
+            toast(e.message, "err");
+          }).then(function () { btn.disabled = false; });
+        };
+        if (destructive) {
+          confirmAction("Action « " + act + " » sur " + m.name + " ?", {
+            title: "Confirmer l'action", danger: true, confirmLabel: act
+          }).then(function (ok) { if (ok) run(); });
+        } else {
+          run();
+        }
       });
     });
 
@@ -461,10 +502,12 @@
 
     box.querySelectorAll(".warn-del").forEach(function (b) {
       b.addEventListener("click", function () {
-        if (!confirmAction("Supprimer cet avertissement ?")) return;
-        apiPost("warn/delete", { userId: m.id, warnId: b.getAttribute("data-warn") }).then(function () {
-          toast("Avertissement supprimé.", "ok"); refreshTarget(m.id);
-        }).catch(function (e) { toast(e.message, "err"); });
+        confirmAction("Supprimer cet avertissement ?", { danger: true, confirmLabel: "Supprimer" }).then(function (ok) {
+          if (!ok) return;
+          apiPost("warn/delete", { userId: m.id, warnId: b.getAttribute("data-warn") }).then(function () {
+            toast("Avertissement supprimé.", "ok"); refreshTarget(m.id);
+          }).catch(function (e) { toast(e.message, "err"); });
+        });
       });
     });
   }
@@ -552,10 +595,13 @@
       var annF = $("#mod-announce");
       if (annF) annF.addEventListener("submit", function (ev) {
         ev.preventDefault();
-        if (!confirmAction("Publier cette annonce ?")) return;
-        apiPost("announce", { message: $("#ann-msg").value.trim() })
-          .then(function () { toast("Annonce publiée.", "ok"); annF.reset(); prependLog(); })
-          .catch(function (e) { toast(e.message, "err"); });
+        var msg = $("#ann-msg").value.trim();
+        confirmAction("Publier cette annonce dans le salon d'annonces ?", { confirmLabel: "Publier" }).then(function (ok) {
+          if (!ok) return;
+          apiPost("announce", { message: msg })
+            .then(function () { toast("Annonce publiée.", "ok"); annF.reset(); prependLog(); })
+            .catch(function (e) { toast(e.message, "err"); });
+        });
       });
 
       var moreBtn = $("#log-more");
