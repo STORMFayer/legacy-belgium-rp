@@ -9,7 +9,7 @@ compatibility_date = "2024-11-01"
 # ---------------------------------------------------------------------------
 [[kv_namespaces]]
 binding = "LB_STAFF"
-id = "REMPLIR_APRES_wrangler_kv_namespace_create"
+id = "606ebb6ed535488b863fba6d20c583c4"
 
 # ---------------------------------------------------------------------------
 # Secrets (NE PAS mettre ici — utiliser `wrangler secret put <NOM>`) :

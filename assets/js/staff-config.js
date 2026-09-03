@@ -43,7 +43,7 @@ window.STAFF_CONFIG = {
      Laisse vide tant que le Worker n'est pas déployé → la section Modération
      reste masquée. Voir worker/README.md.
      ------------------------------------------------------------------------- */
-  apiBase: "",   // ex. "https://lb-staff-api.ton-sous-domaine.workers.dev"
+  apiBase: "https://lb-staff-api.rafadu8965.workers.dev",
 
   /* -------------------------------------------------------------------------
      ANNUAIRE DU STAFF.  « role » doit correspondre à un nom de `roles`.

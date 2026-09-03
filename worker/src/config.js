@@ -10,7 +10,7 @@ export const GUILD_ID = "1531350214559137822";
 export const ALLOWED_ORIGIN = "https://stormfayer.github.io";
 
 /* Salon où « /api/announce » publie (à remplir : clic droit sur le salon → Copier l'ID). */
-export const ANNOUNCE_CHANNEL_ID = "";
+export const ANNOUNCE_CHANNEL_ID = "1531350215439941682";
 
 /* Rôle → palier de permission.  Palier du membre = le plus élevé de ses rôles.
      3 = Direction   (Fondateur, Co-Fondateur, Développeur)
